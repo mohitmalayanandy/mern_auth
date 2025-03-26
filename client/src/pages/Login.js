@@ -16,19 +16,35 @@ const Login = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
+  const sendVerificationOtp = async () => {
+    try {
+      axios.defaults.withCredentials = true;
+
+      const { data } = await axios.post(backendUrl + '/api/auth/send-verify-otp')
+      if (data.success) {
+        navigate('/email-verify')
+        toast.success(data.message)
+      } else {
+        toast.error(data.message)
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message)
+    }
+  };
+
   const onSubmitHandler = async (e) => {
     try {
       e.preventDefault();
 
-      axios.defaults.withCredentials = true
-      
+      axios.defaults.withCredentials = true;
+
       if (state === 'Sign Up') {
         const { data } = await axios.post(backendUrl + '/api/auth/register', { name, email, password })
 
         if (data.success) {
           setIsLoggedIn(true)
           getUserData()
-          navigate('/')
+          sendVerificationOtp()
         } else {
           toast.error(data.message)
         }
@@ -49,17 +65,18 @@ const Login = () => {
   }
 
   return (
-    <div className='flex items-center justify-center min-h-screen px-6 sm:px-0 bg-gradient-to-br from-green-500 to-blue-500'>
-      <img onClick={() => navigate('/')} src={assets.logo} alt="" className='absolute left-5 sm:left-20 top-5 sm:w-32 cursor-pointer' />
-      <div className='bg-slate-900 p-10 rounded-lg shadow-lg w-full sm:w-96 text-indigo-300'>
+    <div className='flex items-center justify-center min-h-screen px-6 sm:px-0'>
+      {/* <img onClick={() => navigate('/')} src={assets.logo} alt="" className='absolute left-5 sm:left-20 top-5 sm:w-32 cursor-pointer' /> */}
+      <div className='bg-black p-10 rounded-lg shadow-lg w-full sm:w-96 text-indigo-300'>
         <h2 className='text-3xl font-semibold text-white text-center mb-3'>{state === 'Sign Up' ? 'Create Account' : 'Login'}</h2>
         <p className='text-center text-sm mb-6'>{state === 'Sign Up' ? 'Create your account' : 'Login to your account'}</p>
 
         <form onSubmit={onSubmitHandler}>
-          {state === 'Sign Up' && (<div className='mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-3xl bg-slate-600'>
-            <img src={assets.person_icon} alt="" />
-            <input onChange={(e) => setName(e.target.value)} value={name} type="text" placeholder='Full Name' required className='outline-none bg-transparent' />
-          </div>)}
+          {state === 'Sign Up' && (
+            <div className='mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-3xl bg-slate-600'>
+              <img src={assets.person_icon} alt="" />
+              <input onChange={(e) => setName(e.target.value)} value={name} type="text" placeholder='Full Name' required className='outline-none bg-transparent' />
+            </div>)}
 
           <div className='mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-3xl bg-slate-600'>
             <img src={assets.mail_icon} alt="" />
