@@ -33,7 +33,7 @@ module.exports.register = async (req, res) => {
             maxAge: 7 * 24 * 60 * 60 * 1000
         });
 
-        // Sending mail
+       /*  // Sending mail
         const mailOptions = {
             from: process.env.SENDER_EMAIL,
             to: email,
@@ -41,7 +41,7 @@ module.exports.register = async (req, res) => {
             text: `Hey ${name}, Your account has been created with email id: ${email}`
         }
         await transporter.sendMail(mailOptions);
-
+ */
         return res.json({ success: true });
 
     } catch (error) {
@@ -165,6 +165,16 @@ module.exports.verifiyEmail = async (req, res) => {
         user.verifyOtpExpireAt = 0;
 
         await user.save();
+
+        const mailOptions = {
+            from: process.env.SENDER_EMAIL,
+            to: user.email,
+            subject: 'Successfully Verified',
+            text: `Your Account Has Been Created Successfully`,
+
+        }
+        await transporter.sendMail(mailOptions);
+
         return res.json({ succcess: true, message: 'Email Verified Successfully' })
 
     } catch (error) {

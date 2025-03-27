@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { AppContext } from '../context/AppContext';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify'
@@ -8,7 +8,7 @@ const EmailVerify = () => {
 
   axios.defaults.withCredentials = true;
   const {backendUrl, isLoggedIn, userData, getUserData} = useContext(AppContext);
-
+  const [loading, setLoading] = useState(false)
 
   const navigate = useNavigate()
 
@@ -38,6 +38,7 @@ const EmailVerify = () => {
   const onSubmitHandler = async (e) =>{
     try {
       e.preventDefault();
+      setLoading(true);
       const otpArray = inputRefs.current.map(e => e.value)
       const otp = otpArray.join('')
       
@@ -79,7 +80,15 @@ const EmailVerify = () => {
               />
             ))}
           </div>
-          <button type='submit' className='w-full py-2.5 rounded-full bg-gradient-to-r from-blue-500 to-green-500'>Verify Email</button>
+          <button type='submit' className='w-full py-2.5 rounded-full bg-gradient-to-r from-blue-500 to-green-500'>
+          {loading ? (
+              <div className="flex items-center justify-center">
+                Processing...
+              </div>
+            ) :
+              'Verify Email'
+            }
+          </button>
         </form>
       </div>
     </div>

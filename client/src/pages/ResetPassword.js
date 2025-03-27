@@ -18,7 +18,7 @@ const ResetPassword = () => {
   const [isEmailSent, setIsEmailSent] = useState('');
   const [otp, setOtp] = useState(0);
   const [isOtpSubmited, setIsOtpSubmited] = useState(false);
-
+  const [loading, setLoading] = useState(false)
 
   const inputRefs = React.useRef([]);
   const handleInput = (e, index) => {
@@ -46,6 +46,7 @@ const ResetPassword = () => {
   const onSubmitEmail = async (e) => {
     e.preventDefault();
     try {
+      setLoading(true);
       const { data } = await axios.post(backendUrl + '/api/auth/send-reset-otp', { email });
       data.success ? toast.success(data.message) : toast.error(data.message)
       data.success && setIsEmailSent(true);
@@ -58,7 +59,6 @@ const ResetPassword = () => {
 
   const onSubmitOtp = async (e) => {
     e.preventDefault();
-
     const otpArray = inputRefs.current.map(e => e.value);
     setOtp(otpArray.join(''))
     setIsOtpSubmited(true)
@@ -68,11 +68,12 @@ const ResetPassword = () => {
   const onSubmitNewPassword = async (e) => {
     e.preventDefault();
     try {
+      setLoading(true);
       const { data } = await axios.post(backendUrl + '/api/auth/reset-password', { email, otp, newPassword })
 
       data.success ? toast.success(data.message) : toast.error(data.message)
       data.success && navigate('/login')
-      
+
     } catch (error) {
       toast.error(error.response?.data?.message)
     }
@@ -90,7 +91,15 @@ const ResetPassword = () => {
               <img src={assets.mail_icon} alt="" />
               <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder='E-mail ID' required className='outline-none bg-transparent text-white' />
             </div>
-            <button type='submit' className='w-full py-2.5 rounded-full bg-gradient-to-r from-blue-500 to-green-500'>Send OTP</button>
+            <button type='submit' className='w-full py-2.5 rounded-full bg-gradient-to-r from-blue-500 to-green-500'>
+              {loading ? (
+                <div className="flex items-center justify-center">
+                  Loading...
+                </div>
+              ) : (
+                'Send OTP'
+              )}
+            </button>
           </form>
         }
         {/* OTP input */}

@@ -15,9 +15,11 @@ const Login = () => {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
 
   const sendVerificationOtp = async () => {
     try {
+      setLoading(true)
       axios.defaults.withCredentials = true;
 
       const { data } = await axios.post(backendUrl + '/api/auth/send-verify-otp')
@@ -29,13 +31,15 @@ const Login = () => {
       }
     } catch (error) {
       toast.error(error.response?.data?.message)
+    } finally {
+      setLoading(false);
     }
   };
 
   const onSubmitHandler = async (e) => {
     try {
       e.preventDefault();
-
+      setLoading(true);
       axios.defaults.withCredentials = true;
 
       if (state === 'Sign Up') {
@@ -61,6 +65,8 @@ const Login = () => {
       }
     } catch (error) {
       toast.error(error.response?.data?.message)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -75,19 +81,25 @@ const Login = () => {
           {state === 'Sign Up' && (
             <div className='mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-3xl bg-slate-600'>
               <img src={assets.person_icon} alt="" />
-              <input onChange={(e) => setName(e.target.value)} value={name} type="text" placeholder='Full Name' required className='outline-none bg-transparent' />
+              <input onChange={(e) => setName(e.target.value)} value={name} type="text" placeholder='Full Name' required className='outline-none bg-transparent' disabled={loading} />
             </div>)}
 
           <div className='mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-3xl bg-slate-600'>
             <img src={assets.mail_icon} alt="" />
-            <input onChange={(e) => setEmail(e.target.value)} value={email} type="email" placeholder='E-mail ID' required className='outline-none bg-transparent' />
+            <input onChange={(e) => setEmail(e.target.value)} value={email} type="email" placeholder='E-mail ID' required className='outline-none bg-transparent' disabled={loading} />
           </div>
           <div className='mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-3xl bg-slate-600'>
             <img src={assets.lock_icon} alt="" />
-            <input onChange={(e) => setPassword(e.target.value)} value={password} type="password" placeholder='Password' required className='outline-none bg-transparent' />
+            <input onChange={(e) => setPassword(e.target.value)} value={password} type="password" placeholder='Password' required className='outline-none bg-transparent' disabled={loading} />
           </div>
           <p onClick={() => navigate('/reset-password')} className='mb-4 text-indigo-500 cursor-pointer'>Forgot Password</p>
-          <button type='submit' className='w-full py-2.5 rounded-full bg-gradient-to-r from-blue-500 to-green-500'>{state}</button>
+          <button type='submit' className='w-full py-2.5 rounded-full bg-gradient-to-r from-blue-500 to-green-500'>
+            {loading ? (
+              <div className="flex items-center justify-center">
+                <img src={assets.loading} alt="" />
+                Loading...
+              </div>) : (state)}
+          </button>
         </form>
         {state === 'Sign Up' ? (<p className='text-gray-400 text-center text-xs mt-4'>Already have an Account?
           <span onClick={() => setState('Login')} className='text-blue-400 cursor-pointer underline'> Login Here</span>
